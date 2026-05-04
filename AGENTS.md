@@ -243,6 +243,8 @@ Diagrams are listed in `wiki/_meta/index.md` under a **Diagrams** subsection of 
 
 Process anything in `inbox/` — web clippings, PDFs, URLs, pasted text — into detailed source notes in `sources/`.
 
+**YouTube URLs:** When the argument is a YouTube URL (`youtube.com/watch` or `youtu.be/`), fetch the transcript automatically using `youtube-transcript-api` (`uvx --from youtube-transcript-api youtube_transcript_api "<VIDEO_ID>" --format text`). Get the video title via YouTube's oembed API (`curl -s "https://www.youtube.com/oembed?url=$URL&format=json"`). Write the transcript to `inbox/<Title>.md` then process as normal. If no transcript is available, fall back to the generic URL extraction flow.
+
 **The standard for a good source note:** a reader should be able to understand and use the ideas in the source without going back to the original. That means reconstructing arguments, not just cataloguing topics. Favour paragraphs over bullets. Preserve distinctions the author makes — especially ones that are easy to collapse. If the source is technical, include enough of the mechanism that the note is actually useful later.
 
 **Reading strategy for long files:** Use the two-pass approach:

@@ -12,9 +12,42 @@ Ingest raw material into the Bloom vault.
 
 2. If `$ARGUMENTS` contains a URL or path, ingest that specifically instead of scanning the inbox.
 
-### URL Extraction
+### YouTube URL handling
 
-If `$ARGUMENTS` is a URL (starts with `http://` or `https://`):
+If `$ARGUMENTS` is a YouTube URL (contains `youtube.com/watch` or `youtu.be/`):
+
+1. **Extract video ID** — parse from the URL:
+   - `youtube.com/watch?v=<ID>` → extract `<ID>`
+   - `youtu.be/<ID>` → extract `<ID>`
+   - Strip any extra params after `&` in the v= parameter
+
+2. **Get video title** — run:
+   ```bash
+   curl -s "https://www.youtube.com/oembed?url=$ARGUMENTS&format=json" | python3 -c "import sys,json; print(json.load(sys.stdin)['title'])"
+   ```
+
+3. **Fetch transcript** — run:
+   ```bash
+   uvx --from youtube-transcript-api youtube_transcript_api "<VIDEO_ID>" --format text
+   ```
+   If transcript is unavailable or the video has no captions, fall back to the generic URL extraction flow below.
+
+4. **Write to inbox** — write the transcript to `inbox/<Title>.md`:
+   ```
+   # <Video Title>
+
+   Source: <YouTube URL>
+
+   ---
+
+   <transcript text>
+   ```
+
+5. **Process as normal** — continue from step "Normalise into a source note"
+
+### URL Extraction (non-YouTube)
+
+If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouTube URL:
 
 1. **Extract content** — run:
    ```bash
@@ -30,7 +63,6 @@ If `$ARGUMENTS` is a URL (starts with `http://` or `https://`):
 
 **Supported sources (no API key needed):**
 - Web pages (articles, blogs)
-- YouTube videos (transcript)
 - PDFs
 - DOCX, PPTX, XLSX, EPUB
 
