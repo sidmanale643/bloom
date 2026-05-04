@@ -1,4 +1,4 @@
-![Bloom](docs/header.png)
+![Bloom](docs/image.png)
 
 # Bloom
 
