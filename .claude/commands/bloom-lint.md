@@ -15,7 +15,7 @@ Count and report:
 - Concept articles in `wiki/` (Type: #type/concept)
 - Query reports in `wiki/` (Type: #type/query)
 - People pages in `wiki/` (Type: #type/person)
-- Diagrams (`.excalidraw` files in `wiki/`)
+- Diagrams (notes with `## Diagram` sections)
 - Total keywords registered in the Keywords section of `wiki/_meta/index.md`
 - Total wikilinks across the vault (rough gauge of connectivity)
 
@@ -48,8 +48,8 @@ Report any file missing required fields.
 
 #### Diagrams
 
-- **Orphaned `.excalidraw` files** — `.excalidraw` files in `wiki/` not embedded in any `.md` note
-- **Broken diagram embeds** — `![[...]]` embeds pointing to missing `.excalidraw` files
+- **Orphaned `## Diagram` sections** — mermaid code blocks in notes not listed in `wiki/_meta/index.md`
+- **Broken diagram references** — entries in `wiki/_meta/index.md` pointing to notes without `## Diagram` sections
 
 #### 4. Broken links
 

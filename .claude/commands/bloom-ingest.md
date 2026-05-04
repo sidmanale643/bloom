@@ -90,7 +90,7 @@ If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouT
       - Any counterpoints or debates in the field
     - **Key Takeaways**: 3-5 actionable insights or summary points
     - **Connections**: How this relates to existing knowledge in the vault — cross-reference relevant wiki concepts and companion vault notes
-5. **Consider a diagram** — if the source contains visual content worth recreating (architecture diagrams, process flows, data models, etc.) or describes a system/process where a visual summary would add clarity, generate an Excalidraw diagram. Save as `wiki/<Source Title>.excalidraw` and embed under `## Diagram` at the end of the source note. Default: only when helpful and needed.
+5. **Consider a diagram** — if the source contains visual content worth recreating (architecture diagrams, process flows, data models, etc.) or describes a system/process where a visual summary would add clarity, add a mermaid diagram under `## Diagram` at the end of the source note. Default: only when helpful and needed.
 6. **Create a people page** if the source has an author and no page exists in `wiki/` yet. Keep it thin — a connector node, not an essay. See CLAUDE.md for the three-tier rule.
 7. **Cross-reference the companion vault** (if one is configured in CLAUDE.md): scan for notes on the same topic. If any match, mention them in the Connections section using `[[VaultName/Path/Title]]` style links. Never write into the companion vault.
 8. **Clear the inbox**: remove the original once the source note is written.

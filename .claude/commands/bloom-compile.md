@@ -22,7 +22,7 @@ If `$ARGUMENTS` names a specific source note, concept, or theme, focus the compi
       - Open questions — real research gaps
       - Prompts — essay-shaped prompts where the concept intersects existing notes (empty is fine)
       - At least 2 `Related:` links to existing concepts. If zero exist, note why it's an island in the body (and expect the lint to flag it).
-4. **Consider a diagram** — if the concept describes architecture, systems, data flows, processes, or relationships where a visual summary would add clarity, generate an Excalidraw diagram. Save as `wiki/<Concept Title>.excalidraw`. Embed under `## Diagram` at the end of the concept body. Register it in `wiki/_meta/index.md`. Default: only when helpful and needed.
+4. **Consider a diagram** — if the concept describes architecture, systems, data flows, processes, or relationships where a visual summary would add clarity, add a mermaid diagram under `## Diagram` at the end of the concept body. Register the note in `wiki/_meta/index.md`. Default: only when helpful and needed.
 5. **If uncertain**: log the theme as a candidate in the Candidates section of `wiki/_meta/index.md` with a one-line rationale. Don't create speculative concepts from a single source — wait for cross-source signal.
 
 ### Cross-vault synthesis

@@ -45,7 +45,7 @@ Body. **Bias toward terse.** A tight, dense report is more useful than a thoroug
 - **Tensions** — 0-3 bullets. Name real disagreement, not every mild difference. Empty is fine.
 - **Open gaps** — 3-5 bullets max. Real questions the vault raised but can't answer. These feed back into `wiki/_meta/index.md` → Open Questions.
 - **What this suggests writing** — 3-5 bullets max. Essay-shaped prompts, one sentence each, pointed and specific. Same register as a concept article's Prompts section. Cut any prompt that's lukewarm.
-- **Diagram** — if the question involves systems, architectures, flows, or relationships where a visual summary would add clarity, generate an Excalidraw diagram. Save as `wiki/YYYY-MM-DD-<slug>.excalidraw` and embed under `## Diagram`. Default: only when helpful and needed.
+- **Diagram** — if the question involves systems, architectures, flows, or relationships where a visual summary would add clarity, add a mermaid diagram under `## Diagram`. Default: only when helpful and needed.
 
 ### Feedback into the graph (so queries compound)
 
