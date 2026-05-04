@@ -95,10 +95,9 @@ How this source speaks to existing notes in the vault. Name specific concept pag
 
 ## Diagram
 
-If the source contains visual content (architecture diagrams, process flows, data models, etc.) or describes a system/process where a visual summary would add clarity, generate an Excalidraw diagram and embed it here.
+If the source contains visual content (architecture diagrams, process flows, data models, etc.) or describes a system/process where a visual summary would add clarity, add a mermaid diagram here.
 
-```markdown
-![[Article Title.excalidraw]]
+```mermaid
 ```
 
 If no diagram is needed, omit this section entirely. Default: only when helpful and needed.
@@ -198,7 +197,7 @@ People pages stay thin — connector nodes, not essays.
 
 ## Diagrams
 
-Bloom supports generating Excalidraw diagrams via the excalidraw-diagram-skill. Diagrams are visual supplements — they should be drawn when helpful and needed, not by default.
+Bloom uses mermaid for diagrams. Diagrams are visual supplements — they should be drawn when helpful and needed, not by default.
 
 ### When to generate
 
@@ -219,21 +218,11 @@ Default stance: **only when helpful and needed.**
 
 ### Where diagrams live
 
-All diagrams are `.excalidraw` files stored in `wiki/`:
-
-- **Concept diagrams:** `wiki/Concept Title.excalidraw`
-- **Source diagrams:** `wiki/Article Title.excalidraw` (named after the source)
-
-Reference in the parent note by embedding:
-```markdown
-![[Article Title.excalidraw]]
-```
-
-Place the embed at the end of the body, under a `## Diagram` heading.
+Diagrams are inline mermaid code blocks inside the note they illustrate, placed under a `## Diagram` heading at the end of the body.
 
 ### Tracking
 
-Diagrams are listed in `wiki/_meta/index.md` under a **Diagrams** subsection of **Pages**, with a link to the note they illustrate.
+Notes containing `## Diagram` sections are listed in `wiki/_meta/index.md` under a **Diagrams** subsection of **Pages**.
 
 ---
 
@@ -282,6 +271,24 @@ Won't do: write into your companion vault, invent citations, pad thin answers.
 ### Lint (`/bloom-lint`)
 
 Health-check the whole vault. Overwrite `wiki/_meta/health.md` with: Stats, Orphans, Candidates needing attention, Keyword drift.
+
+### Graph (`/bloom-graph`)
+
+Generate a connection graph of the entire vault. Overwrite `wiki/_meta/graph.md` with a mermaid diagram plus structured analysis.
+
+**What it reads:** All `.md` files in `wiki/` and `sources/` — frontmatter (`Related:`, `Sources:`, `Keyword:`) and `## Connections` sections.
+
+**What it outputs:**
+- Mermaid `graph TD` with nodes styled by type (concept, source, person, query, meta)
+- Edges from: `Related:` (solid), `Sources:` (dotted), `## Connections` (labeled), keyword overlap (thick)
+- **Stats** — node/edge counts, type breakdown, average degree
+- **Orphans** — nodes with < 2 connections (violates backlink rule for concepts)
+- **Keyword Clusters** — groups of nodes sharing keywords
+- **Hubs** — most connected nodes
+
+**Run:** `python3 scripts/bloom-graph.py`
+
+Won't do: modify any notes, create new notes, generate excalidraw files, or visualize companion vault content.
 
 ---
 
