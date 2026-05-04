@@ -2,20 +2,20 @@
 
 # Bloom
 
-A personal knowledge vault maintained by Claude. You collect sources. Claude compiles them into a wiki of concepts, connections, and open questions.
+A living knowledge vault managed by Claude. You gather the raw material; Claude shapes it into a wiki of interconnected concepts, unresolved questions, and emergent themes.
 
-Based on [Andrej Karpathy's LLM wiki pattern](https://x.com/karpathy/status/2039805659525644595): raw source documents go in, an LLM incrementally compiles them into concept articles with backlinks, and the wiki becomes a rich substrate for Q&A and further research.
+Inspired by [Andrej Karpathy's LLM wiki pattern](https://x.com/karpathy/status/2039805659525644595): feed in unprocessed documents, and an LLM progressively distils them into concept articles with dense backlinks, turning the wiki into fertile ground for research and discovery.
 
 ## Quick start
 
 1. **Clone this repo** and open it in [Obsidian](https://obsidian.md)
-2. **Install Claude Code** — [claude.ai/code](https://claude.ai/code) (or your preferred agent!)
-3. **Drop something into `inbox/`** — a URL, a web clipping (via [Obsidian Web Clipper](https://obsidian.md/clipper)), a PDF, or pasted text
-4. **Run `/bloom-ingest`** — Claude processes everything in the inbox into clean source notes
-5. **Run `/bloom-compile`** — Claude scans for un-compiled sources and builds concept articles when themes recur across 2+ sources
-6. **Run `/bloom-ask`** followed by a question — Claude researches your question across the vault and writes a report
+2. **Install Claude Code** — [claude.ai/code](https://claude.ai/code) (or whichever agent you prefer)
+3. **Drop something into `inbox/`** — a URL, a web clipping (via [Obsidian Web Clipper](https://obsidian.md/clipper)), a PDF, or plain text
+4. **Run `/bloom-ingest`** — Claude turns everything in the inbox into polished source notes
+5. **Run `/bloom-compile`** — Claude hunts for themes that surface in two or more sources and assembles concept articles
+6. **Run `/bloom-ask`** followed by a question — Claude investigates across the vault and drafts a report
 
-That's it. Drop, ingest, compile. The vault grows itself.
+That's the loop. Drop, ingest, compile. The vault compounds on its own.
 
 ## How it works
 
@@ -23,71 +23,74 @@ That's it. Drop, ingest, compile. The vault grows itself.
 
 | Directory | Purpose | Who writes |
 |---|---|---|
-| `inbox/` | Staging for unprocessed drops | You |
-| `sources/` | One atomic note per article, paper, or transcript | Claude |
+| `inbox/` | Landing zone for unprocessed material | You |
+| `sources/` | Atomic notes — one per article, paper, or transcript | Claude |
 | `wiki/` | Concept articles, people pages, query reports, index, and log | Claude |
 
 ### The contract
 
-You curate what goes in. Claude writes and maintains the derived layer. The separation matters — your taste decides what's worth keeping; Claude does the synthesis work that humans can't sustain at scale.
+You decide what enters. Claude owns everything downstream. That boundary is deliberate — your judgement filters what deserves attention, while Claude handles the synthesis that would exhaust a human at scale.
 
 ### The 2-source rule
 
-Claude won't create a concept article from a single source. Themes are logged as **candidates** in `wiki/_meta/index.md` until a second independent source confirms the pattern. This prevents the wiki from filling up with speculative one-offs.
+A single source is never enough for a concept. Themes are parked as **candidates** in `wiki/_meta/index.md` until another source independently corroborates them. This stops the wiki from bloating with half-baked ideas.
 
 ### What compounds
 
-- **Sources** build the raw material
-- **Concepts** crystallise when themes recur
-- **Queries** (`/bloom-ask`) produce research reports that get filed back into the wiki — so questions add up over time
-- **Research threads** emerge as clusters of 3+ concepts sharing keywords
+- **Sources** stack up as the raw substrate
+- **Concepts** harden where patterns repeat
+- **Queries** (`/bloom-ask`) generate research reports that are filed straight back into the wiki — so every question enriches the whole
+- **Research threads** surface once three or more concepts cluster around the same keywords
 
 ## The four commands
 
 | Command | What it does |
 |---|---|
-| `/bloom-ingest` | Process inbox into source notes |
-| `/bloom-compile` | Build or extend concept articles from un-compiled sources |
-| `/bloom-ask` | Research a question across the vault |
-| `/bloom-lint` | Health-check: stats, orphans, keyword drift |
+| `/bloom-ingest` | Turn inbox items into source notes |
+| `/bloom-compile` | Forge or expand concept articles from un-compiled sources |
+| `/bloom-ask` | Probe the vault with a question and write up the findings |
+| `/bloom-lint` | Audit the vault: statistics, orphans, keyword drift |
 
 ## Companion vault (optional)
 
-If you already keep personal notes (a commonplace, Zettelkasten, or notes folder), you can point Claude at it as a read-only companion. Claude will cross-reference your notes when compiling but never write into them. See `AGENTS.md` for setup.
+If you already maintain a personal notebook — a commonplace, Zettelkasten, or notes folder — you can link it as a read-only companion. Claude will weave references to your notes into its compilations but will never modify them. Check `AGENTS.md` for configuration.
 
 ## Customisation
 
-- **Areas**: Edit the `#area/` taxonomy in `CLAUDE.md` to match your interests
-- **Keywords**: Managed in `wiki/_meta/index.md` — add new ones as your reading grows
-- **Obsidian theme**: The `.obsidian/` config is included with a clean setup. Swap themes or plugins as you like
-- **Voice**: Concept articles are written as sharp foundations for *your* writing, not finished essays. Adjust the voice instructions in `CLAUDE.md` if you want a different tone
+- **Areas**: Tweak the `#area/` taxonomy in `CLAUDE.md` to reflect your own domains
+- **Keywords**: Curated in `wiki/_meta/index.md` — expand the list as your reading deepens
+- **Obsidian theme**: The bundled `.obsidian/` config is minimal. Swap themes or plugins freely
+- **Voice**: Concept articles are deliberately framed as rough scaffolding for *your* prose, not final pieces. Change the voice guidance in `CLAUDE.md` if you want a different register
 
 ## What's included
 
-This template ships with two example sources and one example concept to show the structure:
+The repo includes a set of sample notes so you can see the structure in action:
 
-- `sources/LLM Knowledge Bases (Karpathy).md` — the post that inspired this vault pattern
-- `sources/What Matters in the Age of AI Is Taste.md` — on taste as the human differentiator in AI-augmented work
-- `wiki/Two-layer knowledge systems.md` — a concept article compiled from both sources
-- `wiki/Andrej Karpathy.md` — an example people page
+- `sources/HTTP Protocol for Backend Engineers.md` — a full source note on HTTP statelessness, methods, headers, and security
+- `wiki/2026-05-04-what-is-http.md` — a query report answering "what is HTTP", referencing the source above
+- `residuals/http.md` — the raw transcript that was ingested to produce the source note
 
-Delete these and clear `wiki/_meta/index.md` once you've seen how they work, or keep them as seeds for your own vault.
+Remove these and wipe `wiki/_meta/index.md` once you have the hang of it, or leave them as starting seeds for your own vault.
 
 ## Schema
 
-Everything Claude needs to know is in `AGENTS.md`. That file is the single source of truth for how the vault operates. Read it if you want to understand or modify the rules.
+Every operational rule Claude follows lives in `AGENTS.md`. Treat it as the canonical spec for the vault. Read it to understand the system, or edit it to bend the rules.
 
-## Optional: Diagram support
+## Diagram support
 
-Bloom supports generating Excalidraw diagrams via Claude Code or OpenCode using the [excalidraw-diagram-skill](https://github.com/coleam00/excalidraw-diagram-skill).
+Bloom renders diagrams with Mermaid. Any note can carry a `## Diagram` section containing an inline ` ```mermaid ``` ` block. Obsidian displays these out of the box — nothing extra to install.
 
-To enable it:
+Example:
 
-```bash
-bash scripts/install-excalidraw-skill.sh
+```markdown
+## Diagram
+
+```mermaid
+graph TD
+    A[Inbox] --> B[Sources]
+    B --> C[Wiki]
 ```
-
-Then restart your agent and ask for diagrams naturally — e.g., *"Draw the three-layer architecture of this vault."*
+```
 
 ---
 
