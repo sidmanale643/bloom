@@ -2,7 +2,7 @@
 
 # Bloom
 
-A living knowledge vault managed by Claude. You gather the raw material; Claude shapes it into a wiki of interconnected concepts, unresolved questions, and emergent themes.
+A living knowledge vault managed by Claude. You gather raw material; Claude shapes it into a wiki of interconnected concepts, unresolved questions, and emergent themes.
 
 Inspired by [Andrej Karpathy's LLM wiki pattern](https://x.com/karpathy/status/2039805659525644595): feed in unprocessed documents, and an LLM progressively distils them into concept articles with dense backlinks, turning the wiki into fertile ground for research and discovery.
 
@@ -23,9 +23,10 @@ That's the loop. Drop, ingest, compile. The vault compounds on its own.
 
 | Directory | Purpose | Who writes |
 |---|---|---|
-| `inbox/` | Landing zone for unprocessed material | You |
-| `sources/` | Atomic notes — one per article, paper, or transcript | Claude |
-| `wiki/` | Concept articles, people pages, query reports, index, and log | Claude |
+| `inbox/` | Staging for unprocessed drops (URLs, clippings, PDFs, pasted text) | You |
+| `sources/` | Immutable atomic source notes — one per article, paper, or transcript | Claude |
+| `wiki/` | Concept articles, people pages, query reports, index, log, and health | Claude |
+| `residuals/` | Processed inbox items kept as originals; never edited | Claude |
 
 ### The contract
 
@@ -39,58 +40,63 @@ A single source is never enough for a concept. Themes are parked as **candidates
 
 - **Sources** stack up as the raw substrate
 - **Concepts** harden where patterns repeat
-- **Queries** (`/bloom-ask`) generate research reports that are filed straight back into the wiki — so every question enriches the whole
+- **Queries** (`/bloom-ask`) generate research reports filed back into the wiki — every question enriches the whole
+- **Sessions** (`/save`) capture working conversations as narrative wiki pages
+- **Graphs** (`/bloom-graph`) visualise the entire vault as a connection network
 - **Research threads** surface once three or more concepts cluster around the same keywords
 
-## The four commands
+## The six commands
 
 | Command | What it does |
 |---|---|
-| `/bloom-ingest` | Turn inbox items into source notes |
+| `/bloom-ingest` | Turn inbox items into source notes. Auto-fetches YouTube transcripts and extracts web content from URLs |
 | `/bloom-compile` | Forge or expand concept articles from un-compiled sources |
 | `/bloom-ask` | Probe the vault with a question and write up the findings |
 | `/bloom-lint` | Audit the vault: statistics, orphans, keyword drift |
+| `/bloom-graph` | Generate a mermaid connection graph of the entire vault |
+| `/save` | Capture the current Claude conversation as a narrative wiki page |
 
-## Companion vault (optional)
+## Features
 
-If you already maintain a personal notebook — a commonplace, Zettelkasten, or notes folder — you can link it as a read-only companion. Claude will weave references to your notes into its compilations but will never modify them. Check `AGENTS.md` for configuration.
+### Smart ingest
+- **YouTube URLs** — transcripts fetched automatically via `youtube-transcript-api`
+- **Non-YouTube URLs** — content extracted via trafilatura (`scripts/bloom-fetch.py`)
+- Falls back to `webfetch` if extraction fails
 
-## Customisation
+### Companion vault (optional)
+Link a personal vault (commonplace, Zettelkasten, or notes folder) as read-only. Claude cross-references your notes during compilation but never modifies them. See `AGENTS.md` for setup.
 
-- **Areas**: Tweak the `#area/` taxonomy in `CLAUDE.md` to reflect your own domains
-- **Keywords**: Curated in `wiki/_meta/index.md` — expand the list as your reading deepens
-- **Obsidian theme**: The bundled `.obsidian/` config is minimal. Swap themes or plugins freely
-- **Voice**: Concept articles are deliberately framed as rough scaffolding for *your* prose, not final pieces. Change the voice guidance in `CLAUDE.md` if you want a different register
+### Connection graph
+`/bloom-graph` runs `python3 scripts/bloom-graph.py` and writes a mermaid diagram to `wiki/_meta/graph.md` with nodes styled by type, edges from backlinks and keyword overlap, orphans, hubs, and keyword clusters.
+
+### Mermaid diagrams
+Inline ` ```mermaid ``` ` blocks inside any note. Notes with diagrams are tracked in `wiki/_meta/index.md`. No Excalidraw dependency.
+
+### People pages
+Three-tier system: always create on ingest for authors, create richer profiles for subjects, use wikilinks for passing references until the second independent citation.
+
+### Front-matter
+Plain key-value lines (not YAML). One `#type/` per note. Types: `source`, `concept`, `query`, `person`, `session`, `meta`.
 
 ## What's included
 
-The repo includes a set of sample notes so you can see the structure in action:
+Sample notes so you can see the structure in action:
 
 - `sources/HTTP Protocol for Backend Engineers.md` — a full source note on HTTP statelessness, methods, headers, and security
 - `wiki/2026-05-04-what-is-http.md` — a query report answering "what is HTTP", referencing the source above
 - `residuals/http.md` — the raw transcript that was ingested to produce the source note
 
-Remove these and wipe `wiki/_meta/index.md` once you have the hang of it, or leave them as starting seeds for your own vault.
+Remove these and wipe `wiki/_meta/index.md` once you have the hang of it, or leave them as seeds.
 
 ## Schema
 
-Every operational rule Claude follows lives in `AGENTS.md`. Treat it as the canonical spec for the vault. Read it to understand the system, or edit it to bend the rules.
+Every operational rule lives in `AGENTS.md`. That file is the canonical spec. Read it to understand the system, or edit it to bend the rules. `CLAUDE.md` contains the skill trigger bindings and per-session instructions.
 
-## Diagram support
+## Customisation
 
-Bloom renders diagrams with Mermaid. Any note can carry a `## Diagram` section containing an inline ` ```mermaid ``` ` block. Obsidian displays these out of the box — nothing extra to install.
-
-Example:
-
-```markdown
-## Diagram
-
-```mermaid
-graph TD
-    A[Inbox] --> B[Sources]
-    B --> C[Wiki]
-```
-```
+- **Areas**: Tweak the `#area/` taxonomy in `AGENTS.md` to reflect your own domains
+- **Keywords**: Curated in `wiki/_meta/index.md` — expand as your reading deepens
+- **Voice**: Concepts are rough scaffolding for your prose, not finished pieces. Adjust the voice guidance in `AGENTS.md` for a different register
 
 ---
 
