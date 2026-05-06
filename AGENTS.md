@@ -23,7 +23,7 @@ Three layers, following the Karpathy wiki pattern:
 |---|---|---|
 | `inbox/` | Staging for unprocessed drops (PDFs, URLs, screenshots, pasted text) | You drop, Claude moves to residuals after ingest |
 | `sources/` | Immutable atomic source notes — one per article/paper/transcript | Claude on ingest; minor edits only after creation |
-| `wiki/` | LLM-maintained pages: concepts, queries, people, index, log, health | Claude maintains |
+| `wiki/` | LLM-maintained pages: concepts, queries, sessions, people, index, log, health | Claude maintains |
 | `residuals/` | Processed inbox items kept as originals; never edited by Claude | Claude moves here after ingest |
 
 Special files in `wiki/_meta/`:
@@ -289,6 +289,34 @@ Generate a connection graph of the entire vault. Overwrite `wiki/_meta/graph.md`
 **Run:** `python3 scripts/bloom-graph.py`
 
 Won't do: modify any notes, create new notes, generate excalidraw files, or visualize companion vault content.
+
+### Save (`/save`)
+
+Capture the current Claude conversation as a narrative wiki page. Only invoked explicitly — no auto-save.
+
+**Trigger:** `/save <Title Case — Descriptive Name>` (e.g. `/save Debugging Redis Connection Pool Leaks`)
+
+**What it produces:** `wiki/<Title>.md` — a narrative prose reconstruction written as if the reader wasn't in the session. Type adapts to content: `#type/concept` by default (most working sessions), `#type/query` for research-heavy sessions, `#type/source` if the session processed an external artifact.
+
+Front-matter follows the same convention as other pages:
+```
+Type: #type/concept
+Area: #area/...
+Keyword: #keyword/...
+Date created: [[YYYY-MM-DD]]
+Sources: (any sources referenced or created)
+Related: (links to existing wiki pages)
+
+---
+```
+
+Body is a flowing essay: what was done, why, key decisions made, artifacts produced, concepts explored, open questions left behind. Ends with a `## Connections` section linking to related wiki pages and sources.
+
+**Housekeeping:**
+- Append entry to `wiki/_meta/log.md`
+- Update `wiki/_meta/index.md` (Pages section, keyword counts)
+
+Won't do: write into companion vault, save unless invoked, create sessions from single-variable chitchat.
 
 ---
 
