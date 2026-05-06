@@ -11,7 +11,7 @@ Inspired by [Andrej Karpathy's LLM wiki pattern](https://x.com/karpathy/status/2
 1. **Clone this repo** and open it in [Obsidian](https://obsidian.md)
 2. **Install Claude Code** — [claude.ai/code](https://claude.ai/code) (or whichever agent you prefer)
 3. **Drop something into `inbox/`** — a URL, a web clipping (via [Obsidian Web Clipper](https://obsidian.md/clipper)), a PDF, or plain text
-4. **Run `/bloom-ingest`** — Claude turns everything in the inbox into polished source notes
+4. **Run `/bloom-ingest`** — Claude turns everything in the inbox into detailed, topic-by-topic source notes and moves the originals to `residuals/`
 5. **Run `/bloom-compile`** — Claude hunts for themes that surface in two or more sources and assembles concept articles
 6. **Run `/bloom-ask`** followed by a question — Claude investigates across the vault and drafts a report
 
@@ -24,7 +24,7 @@ That's the loop. Drop, ingest, compile. The vault compounds on its own.
 | Directory | Purpose | Who writes |
 |---|---|---|
 | `inbox/` | Staging for unprocessed drops (URLs, clippings, PDFs, pasted text) | You |
-| `sources/` | Immutable atomic source notes — one per article, paper, or transcript | Claude |
+| `sources/` | Detailed source notes — one per article/paper/transcript. Broken down topic-by-topic with overview, key takeaways, and connections | Claude |
 | `wiki/` | Concept articles, people pages, query reports, index, log, and health | Claude |
 | `residuals/` | Processed inbox items kept as originals; never edited | Claude |
 
@@ -49,7 +49,7 @@ A single source is never enough for a concept. Themes are parked as **candidates
 
 | Command | What it does |
 |---|---|
-| `/bloom-ingest` | Turn inbox items into source notes. Auto-fetches YouTube transcripts and extracts web content from URLs |
+| `/bloom-ingest` | Turn inbox items into source notes, then move originals to `residuals/`. Auto-fetches YouTube transcripts and extracts web content from URLs |
 | `/bloom-compile` | Forge or expand concept articles from un-compiled sources |
 | `/bloom-ask` | Probe the vault with a question and write up the findings |
 | `/bloom-lint` | Audit the vault: statistics, orphans, keyword drift |
