@@ -51,25 +51,16 @@ If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouT
 
 1. **Extract content** — run:
    ```bash
-   uvx content-core extract "$ARGUMENTS" --format markdown
+   uvx --with trafilatura python3 scripts/bloom-fetch.py "$ARGUMENTS"
    ```
 
 2. **Write to inbox** — capture output, write to `inbox/<Title>.md`:
-   - Extract title from page metadata (first line of output or `--format json` to get title)
-   - If extraction fails, try fallback: `uvx kabigon "$ARGUMENTS"`
+   - Derive title from the extracted frontmatter
    - Include raw extracted content as the body
 
 3. **Process as normal** — continue from step "Normalise into a source note"
 
-**Supported sources (no API key needed):**
-- Web pages (articles, blogs)
-- PDFs
-- DOCX, PPTX, XLSX, EPUB
-
-**Edge cases:**
-- Extraction fails → try fallback tool, then error with "Manual extraction needed"
-- Content is empty → write to inbox anyway for manual review
-- Audio/Video (no STT) → skip, note in error that manual transcript required
+**Fallback:** If the script exits with an error or returns empty content, fall back to the `webfetch` tool once. If `webfetch` also fails or returns empty, do not retry — ask the user to manually add a transcript, text dump, or link to `inbox/` for processing.
 
 ### For each item
 
@@ -93,7 +84,7 @@ If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouT
 5. **Consider a diagram** — if the source contains visual content worth recreating (architecture diagrams, process flows, data models, etc.) or describes a system/process where a visual summary would add clarity, add a mermaid diagram under `## Diagram` at the end of the source note. Default: only when helpful and needed.
 6. **Create a people page** if the source has an author and no page exists in `wiki/` yet. Keep it thin — a connector node, not an essay. See CLAUDE.md for the three-tier rule.
 7. **Cross-reference the companion vault** (if one is configured in CLAUDE.md): scan for notes on the same topic. If any match, mention them in the Connections section using `[[VaultName/Path/Title]]` style links. Never write into the companion vault.
-8. **Clear the inbox**: remove the original once the source note is written.
+8. **Clear the inbox**: move the original to `residuals/` once the source note is written.
 
 ### Logging
 
