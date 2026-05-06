@@ -67,6 +67,8 @@ Source: https://example.com/article
 
 One section per major topic in the source. Each section is a self-contained set of detailed notes — not bullets lifted from the text, but your own restatement of the ideas with enough depth to replace reading the original.
 
+Notes should treat the topic directly. The Overview establishes the source context (who, what medium); the Notes section speaks about the ideas themselves. Avoid framing like "the speaker argues" or "the video shows" — state the content on its own terms.
+
 For each topic, cover as many of the following as the source warrants:
 - What the concept is and how the author defines or frames it
 - The reasoning or evidence behind it (mechanism, argument, data, example)
@@ -163,6 +165,7 @@ Hierarchical sub-areas under Craft. Customise the top-level areas to match your 
 - `concept` — a synthesised wiki page built from 2+ sources
 - `query` — a research report answering a question
 - `person` — an entity page for a thinker/author
+- `session` — a narrative reconstruction of a Claude conversation
 - `meta` — vault infrastructure (index, log, health)
 
 **`#keyword/`** — free-form but curated via the Keywords section of `wiki/_meta/index.md`. Before creating a new keyword:
@@ -232,7 +235,15 @@ Notes containing `## Diagram` sections are listed in `wiki/_meta/index.md` under
 
 Process anything in `inbox/` — web clippings, PDFs, URLs, pasted text — into detailed source notes in `sources/`.
 
-**YouTube URLs:** When the argument is a YouTube URL (`youtube.com/watch` or `youtu.be/`), fetch the transcript automatically using `youtube-transcript-api` (`uvx --from youtube-transcript-api youtube_transcript_api "<VIDEO_ID>" --format text`). Get the video title via YouTube's oembed API (`curl -s "https://www.youtube.com/oembed?url=$URL&format=json"`). Write the transcript to `inbox/<Title>.md` then process as normal. If no transcript is available, fall back to the generic URL extraction flow.
+**YouTube URLs:** When the argument is a YouTube URL (`youtube.com/watch` or `youtu.be/`), fetch the transcript automatically using `youtube-transcript-api` (`uvx --from youtube-transcript-api youtube_transcript_api "<VIDEO_ID>" --format text`). Get the video title via YouTube's oembed API (`curl -s "https://www.youtube.com/oembed?url=$URL&format=json"`). Write the transcript to `inbox/<Title>.md` then process as normal.
+
+**Non-YouTube URLs:** Extract content via trafilatura:
+```
+uvx --with trafilatura python3 scripts/bloom-fetch.py "<URL>"
+```
+The script outputs markdown with title, date, and source in frontmatter. Write the output to `inbox/<Title>.md` (derive the title from the extracted title), then process as normal (same workflow as YouTube: read > write source note > update index/log > move to residuals).
+
+If the script exits with an error or returns empty content, fall back to the `webfetch` tool **once**. If `webfetch` also fails or returns empty, do not retry — ask the user to manually add a transcript, text dump, or link to `inbox/` for processing.
 
 **The standard for a good source note:** a reader should be able to understand and use the ideas in the source without going back to the original. That means reconstructing arguments, not just cataloguing topics. Favour paragraphs over bullets. Preserve distinctions the author makes — especially ones that are easy to collapse. If the source is technical, include enough of the mechanism that the note is actually useful later.
 
