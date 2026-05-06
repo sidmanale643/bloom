@@ -8,7 +8,7 @@ Inspired by [Andrej Karpathy's LLM wiki pattern](https://x.com/karpathy/status/2
 
 ## Quick start
 
-1. **Clone this repo** and open it in [Obsidian](https://obsidian.md)
+1. **Clone this repo** and open it in [Obsidian](https://obsidian.md) as a vault
 2. **Install Claude Code** — [claude.ai/code](https://claude.ai/code) (or whichever agent you prefer)
 3. **Drop something into `inbox/`** — a URL, a web clipping (via [Obsidian Web Clipper](https://obsidian.md/clipper)), a PDF, or plain text
 4. **Run `/bloom-ingest`** — Claude turns everything in the inbox into detailed, topic-by-topic source notes and moves the originals to `residuals/`
