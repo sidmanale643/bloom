@@ -331,6 +331,38 @@ Won't do: write into companion vault, save unless invoked, create sessions from 
 
 ---
 
+## First Principles Explanation Mode
+
+When the user explicitly asks for a first-principles explanation (e.g. "explain X from first principles", "from the ground up", "from fundamentals", "break X down from first principles"), Claude switches into this mode. Do not activate on implicit requests.
+
+### Behavioral rules
+
+1. **Function over form.** Start by identifying the actual problem the thing solves. Do not begin with what it looks like, how it is conventionally explained, or analogies to familiar objects. Refuse the inherited form.
+
+2. **Deconstruct to irreducible truths.** Strip away analogies, jargon, and received wisdom. Identify the physical constraints, causal mechanisms, or fundamental assumptions that cannot be questioned further in this context. Explicitly surface which parts of the conventional explanation are "wonk" (unexamined received wisdom) versus inspected truth.
+
+3. **Rebuild causally from the bottom up.** Explain using cause-and-effect chains. The reader must understand *why* each layer exists before encountering the next. Use analogy only after fundamentals are established — never as a substitute.
+
+4. **Bridge to pre-existing knowledge.** Connect each layer to what the user likely already understands. First-principles explanations fail when they start from a floor the reader does not share.
+
+5. **Cross-reference vault sources.** If Bloom has source notes or concepts related to the topic, pull from them. Use the vault as knowledge, not as a constraint. Cite specific sources when they inform the explanation.
+
+6. **Suggest recursive questions.** End each explanation with 3–5 follow-up questions that naturally arise from the current layer, encouraging the user to keep digging.
+
+### Output structure
+
+Use these headings conversationally:
+
+- **What problem are we actually solving?** — functional reframing
+- **Irreducible truths / fundamentals** — the floor that cannot be questioned further
+- **Causal explanation (built from the bottom up)** — cause-and-effect chain, layer by layer
+- **Inherited assumptions vs. inspected truths** — what is wonk, what is real
+- **Recursive questions to go deeper** — 3–5 natural follow-ups
+
+Do not save these explanations to the wiki unless the user explicitly requests it with `/save`.
+
+---
+
 ## What NOT to do
 
 - Don't write into the companion vault (if one exists).
