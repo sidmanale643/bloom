@@ -16,49 +16,27 @@ Ingest raw material into the Bloom vault.
 
 If `$ARGUMENTS` is a YouTube URL (contains `youtube.com/watch` or `youtu.be/`):
 
-1. **Extract video ID** — parse from the URL:
-   - `youtube.com/watch?v=<ID>` → extract `<ID>`
-   - `youtu.be/<ID>` → extract `<ID>`
-   - Strip any extra params after `&` in the v= parameter
-
-2. **Get video title** — run:
+1. **Fetch and write to inbox** — run:
    ```bash
-   curl -s "https://www.youtube.com/oembed?url=$ARGUMENTS&format=json" | python3 -c "import sys,json; print(json.load(sys.stdin)['title'])"
+   uvx --from youtube-transcript-api python3 scripts/bloom-youtube.py "$ARGUMENTS"
    ```
+   This script extracts the video ID, gets the title, fetches the transcript, and writes the raw transcript text directly to `inbox/<Video Title>.md`. It prints the output file path to stdout.
 
-3. **Fetch transcript** — run:
-   ```bash
-   uvx --from youtube-transcript-api youtube_transcript_api "<VIDEO_ID>" --format text
-   ```
-   If transcript is unavailable or the video has no captions, fall back to the generic URL extraction flow below.
+2. If the script exits with an error (transcript unavailable, no captions), fall back to the generic URL extraction flow below.
 
-4. **Write to inbox** — write the transcript to `inbox/<Title>.md`:
-   ```
-   # <Video Title>
-
-   Source: <YouTube URL>
-
-   ---
-
-   <transcript text>
-   ```
-
-5. **Process as normal** — continue from step "Normalise into a source note"
+3. **Process as normal** — continue from step "Normalise into a source note"
 
 ### URL Extraction (non-YouTube)
 
 If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouTube URL:
 
-1. **Extract content** — run:
+1. **Extract and write to inbox** — run:
    ```bash
-   uvx --with trafilatura python3 scripts/bloom-fetch.py "$ARGUMENTS"
+   uvx --with trafilatura python3 scripts/bloom-fetch.py --inbox "$ARGUMENTS"
    ```
+   This script fetches the URL, extracts content with trafilatura, and writes the raw extracted content directly to `inbox/<Title>.md`. It prints the output file path to stdout.
 
-2. **Write to inbox** — capture output, write to `inbox/<Title>.md`:
-   - Derive title from the extracted frontmatter
-   - Include raw extracted content as the body
-
-3. **Process as normal** — continue from step "Normalise into a source note"
+2. **Process as normal** — continue from step "Normalise into a source note"
 
 **Fallback:** If the script exits with an error or returns empty content, fall back to the `webfetch` tool once. If `webfetch` also fails or returns empty, do not retry — ask the user to manually add a transcript, text dump, or link to `inbox/` for processing.
 
@@ -74,6 +52,7 @@ If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouT
 3. **Analyze the content** — read through the extracted content and identify distinct topics/sections
 4. **Write detailed topic-by-topic notes**:
     - **Overview**: 1-2 paragraphs summarizing what this source covers
+    - **IMPORTANT**: In Notes sections, state the ideas directly — not "the speaker argues X" but "X". The Overview establishes who said it; the Notes treat the topic on its own terms. This applies to Connections sections too.
     - **Topics**: Create a `### Topic Name` section for each key topic with:
       - Detailed explanations of concepts
       - Examples (code snippets, formulas, real-world applications)

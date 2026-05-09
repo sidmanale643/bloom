@@ -67,7 +67,7 @@ Source: https://example.com/article
 
 One section per major topic in the source. Each section is a self-contained set of detailed notes — not bullets lifted from the text, but your own restatement of the ideas with enough depth to replace reading the original.
 
-Notes should treat the topic directly. The Overview establishes the source context (who, what medium); the Notes section speaks about the ideas themselves. Avoid framing like "the speaker argues" or "the video shows" — state the content on its own terms.
+Notes should treat the topic directly. The Overview establishes the source context (who, what medium); the Notes section speaks about the ideas themselves. Avoid framing like "the speaker argues", "the video shows", "the author writes", or "the article says" — state the content on its own terms. The same rule applies to Connections sections: say "both advocate cause-and-effect reasoning" not "mirrors the video's insistence".
 
 For each topic, cover as many of the following as the source warrants:
 - What the concept is and how the author defines or frames it
@@ -235,13 +235,17 @@ Notes containing `## Diagram` sections are listed in `wiki/_meta/index.md` under
 
 Process anything in `inbox/` — web clippings, PDFs, URLs, pasted text — into detailed source notes in `sources/`.
 
-**YouTube URLs:** When the argument is a YouTube URL (`youtube.com/watch` or `youtu.be/`), fetch the transcript automatically using `youtube-transcript-api` (`uvx --from youtube-transcript-api youtube_transcript_api "<VIDEO_ID>" --format text`). Get the video title via YouTube's oembed API (`curl -s "https://www.youtube.com/oembed?url=$URL&format=json"`). Write the transcript to `inbox/<Title>.md` then process as normal.
+**YouTube URLs:** When the argument is a YouTube URL (`youtube.com/watch` or `youtu.be/`), use the dedicated script which extracts the video ID, fetches the title and transcript, and writes the raw transcript directly to `inbox/<Video Title>.md`:
+```
+uvx --from youtube-transcript-api python3 scripts/bloom-youtube.py "<YOUTUBE_URL>"
+```
+The script writes raw transcript text (no frontmatter, no headers) to `inbox/` and prints the file path. Then process as normal.
 
-**Non-YouTube URLs:** Extract content via trafilatura:
+**Non-YouTube URLs:** Use the fetch script with the `--inbox` flag, which extracts content via trafilatura and writes it directly to `inbox/<Title>.md`:
 ```
-uvx --with trafilatura python3 scripts/bloom-fetch.py "<URL>"
+uvx --with trafilatura python3 scripts/bloom-fetch.py --inbox "<URL>"
 ```
-The script outputs markdown with title, date, and source in frontmatter. Write the output to `inbox/<Title>.md` (derive the title from the extracted title), then process as normal (same workflow as YouTube: read > write source note > update index/log > move to residuals).
+The script writes raw extracted content (no Bloom frontmatter) to `inbox/` and prints the file path. Then process as normal (read > write source note > update index/log > move to residuals).
 
 If the script exits with an error or returns empty content, fall back to the `webfetch` tool **once**. If `webfetch` also fails or returns empty, do not retry — ask the user to manually add a transcript, text dump, or link to `inbox/` for processing.
 
