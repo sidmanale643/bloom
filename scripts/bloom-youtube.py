@@ -37,15 +37,14 @@ def get_title(url):
 def get_transcript(video_id):
     from youtube_transcript_api import YouTubeTranscriptApi
 
-    transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+    api = YouTubeTranscriptApi()
     try:
-        transcript = transcript_list.find_transcript(["en"])
+        transcript = api.fetch(video_id, languages=["en"])
     except Exception:
-        transcript = transcript_list.find_transcript(
-            [t.language_code for t in transcript_list]
-        )
-    pieces = transcript.fetch()
-    return " ".join(snippet["text"] for snippet in pieces)
+        transcript_list = api.list(video_id)
+        codes = [t.language_code for t in transcript_list]
+        transcript = api.fetch(video_id, languages=codes)
+    return " ".join(snippet.text for snippet in transcript)
 
 
 def main():
