@@ -2,103 +2,207 @@
 
 # Bloom
 
-A living knowledge vault managed by Claude. You gather raw material; Claude shapes it into a wiki of interconnected concepts, unresolved questions, and emergent themes.
+Bloom is an agent-run Obsidian vault.
 
-Inspired by [Andrej Karpathy's LLM wiki pattern](https://x.com/karpathy/status/2039805659525644595): feed in unprocessed documents, and an LLM progressively distils them into concept articles with dense backlinks, turning the wiki into fertile ground for research and discovery.
+You drop raw material into `inbox/`. An AI coding agent turns that material into durable source notes, compiles repeated ideas into wiki pages, answers research questions against the vault, and keeps the index, log, graph, and health files current.
 
-## Quick start
+The system follows Andrej Karpathy's LLM wiki pattern: keep raw sources separate from synthesized concepts, then let the derived layer become a searchable thinking surface. Bloom is not a chat transcript archive and not a folder of summaries. It is a working knowledge base that compounds through ingestion, citation, linking, and repeated synthesis.
 
-1. **Clone this repo** and open it in [Obsidian](https://obsidian.md) as a vault
-2. **Install Claude Code** — [claude.ai/code](https://claude.ai/code) (or whichever agent you prefer)
-3. **Drop something into `inbox/`** — a URL, a web clipping (via [Obsidian Web Clipper](https://obsidian.md/clipper)), a PDF, or plain text
-4. **Run `/bloom-ingest`** — Claude turns everything in the inbox into detailed, topic-by-topic source notes and moves the originals to `residuals/`
-5. **Run `/bloom-compile`** — Claude hunts for themes that surface in two or more sources and assembles concept articles
-6. **Run `/bloom-ask`** followed by a question — Claude investigates across the vault and drafts a report
+## Quick Start
 
-That's the loop. Drop, ingest, compile. The vault compounds on its own.
+1. Open this repository as an Obsidian vault.
+2. Use Codex, Claude Code, or another coding agent that can read `AGENTS.md`.
+3. Drop raw material into `inbox/`: URLs, PDFs, transcripts, screenshots, clippings, or pasted text.
+4. Ask the agent to run `/bloom-ingest`.
+5. After several sources accumulate, ask for `/bloom-compile`.
+6. Ask questions with `/bloom-ask <question>`.
 
-## How it works
+The basic loop is:
 
-### Three layers
+```text
+drop source -> ingest -> compile -> ask -> repeat
+```
 
-| Directory | Purpose | Who writes |
-|---|---|---|
-| `inbox/` | Staging for unprocessed drops (URLs, clippings, PDFs, pasted text) | You |
-| `sources/` | Detailed source notes — one per article/paper/transcript. Broken down topic-by-topic with overview, key takeaways, and connections | Claude |
-| `wiki/` | Concept articles, people pages, query reports, index, log, and health | Claude |
-| `residuals/` | Processed inbox items kept as originals; never edited | Claude |
+## The Core Contract
 
-### The contract
+Bloom separates human judgment from agent maintenance.
 
-You decide what enters. Claude owns everything downstream. That boundary is deliberate — your judgement filters what deserves attention, while Claude handles the synthesis that would exhaust a human at scale.
+You decide what deserves to enter the vault. The agent owns the downstream work: extracting sources, writing source notes, creating person pages, compiling concepts, updating metadata, and preserving links.
 
-### The 2-source rule
+The important boundary is simple:
 
-A single source is never enough for a concept. Themes are parked as **candidates** in `wiki/_meta/index.md` until another source independently corroborates them. This stops the wiki from bloating with half-baked ideas.
+- `inbox/` is where you put unprocessed material.
+- `sources/` contains atomic source notes produced from that material.
+- `wiki/` contains synthesized pages, query reports, people pages, and vault metadata.
+- `residuals/` stores processed originals and is treated as immutable.
 
-### What compounds
+If you connect a personal companion vault, Bloom may read from it and link into it, but must not write to it.
 
-- **Sources** stack up as the raw substrate
-- **Concepts** harden where patterns repeat
-- **Queries** (`/bloom-ask`) generate research reports filed back into the wiki — every question enriches the whole
-- **Sessions** (`/save`) capture working conversations as narrative wiki pages
-- **Graphs** (`/bloom-graph`) visualise the entire vault as a connection network
-- **Research threads** surface once three or more concepts cluster around the same keywords
+## Repository Layout
 
-## The six commands
-
-| Command | What it does |
+| Path | Purpose |
 |---|---|
-| `/bloom-ingest` | Turn inbox items into source notes, then move originals to `residuals/`. Auto-fetches YouTube transcripts and extracts web content from URLs |
-| `/bloom-compile` | Forge or expand concept articles from un-compiled sources |
-| `/bloom-ask` | Probe the vault with a question and write up the findings |
-| `/bloom-lint` | Audit the vault: statistics, orphans, keyword drift |
-| `/bloom-graph` | Generate a mermaid connection graph of the entire vault |
-| `/save` | Capture the current Claude conversation as a narrative wiki page |
+| `AGENTS.md` | Canonical operating spec for agents. Read this first. |
+| `CLAUDE.md` | Claude-oriented copy or binding file when used with Claude Code. |
+| `README.md` | Human-facing overview of the project. |
+| `inbox/` | Staging area for unprocessed inputs. |
+| `sources/` | Immutable source notes, one per article, paper, video, transcript, or other source. |
+| `wiki/` | Concepts, query reports, session notes, people pages, and meta files. |
+| `wiki/_meta/index.md` | Catalog, keyword glossary, research threads, open questions, prompts, and candidates. |
+| `wiki/_meta/log.md` | Append-only chronological operation log. |
+| `wiki/_meta/health.md` | Lint dashboard generated by `/bloom-lint`. |
+| `wiki/_meta/graph.md` | Mermaid vault graph generated by `/bloom-graph`. |
+| `residuals/` | Processed originals. Do not edit them. |
+| `scripts/` | Fetching, paper cleaning, transcript, and graph helpers. |
+| `docs/` | Supporting documentation assets. |
 
-## Features
+## Commands
 
-### Smart ingest
-- **YouTube URLs** — transcripts fetched automatically via `youtube-transcript-api`
-- **ArXiv papers** — HTML pages are fetched into filtered reading packets that preserve equations, figures, tables, methods, and results while stripping bibliography noise
-- **Non-YouTube URLs** — content extracted via trafilatura (`scripts/bloom-fetch.py`)
-- Falls back to `webfetch` if extraction fails
+These are natural-language commands handled by the agent according to `AGENTS.md`.
 
-### Companion vault (optional)
-Link a personal vault (commonplace, Zettelkasten, or notes folder) as read-only. Claude cross-references your notes during compilation but never modifies them. See `AGENTS.md` for setup.
+| Command | Result |
+|---|---|
+| `/bloom-ingest` | Process items in `inbox/` into source notes, update people/index/log, then move originals to `residuals/`. |
+| `/bloom-compile` | Find source-backed themes and create or extend concept pages when the 2-source rule is met. |
+| `/bloom-ask <question>` | Research across Bloom and write a cited query report into `wiki/`. |
+| `/bloom-lint` | Audit stats, orphans, keyword drift, and candidates; overwrite `wiki/_meta/health.md`. |
+| `/bloom-graph` | Generate a Mermaid connection graph in `wiki/_meta/graph.md`. |
+| `/save <Title>` | Capture the current agent conversation as a narrative wiki page. |
 
-### Connection graph
-`/bloom-graph` runs `python3 scripts/bloom-graph.py` and writes a mermaid diagram to `wiki/_meta/graph.md` with nodes styled by type, edges from backlinks and keyword overlap, orphans, hubs, and keyword clusters.
+## How Ingest Works
 
-### Mermaid diagrams
-Inline ` ```mermaid ``` ` blocks inside any note. Notes with diagrams are tracked in `wiki/_meta/index.md`. No Excalidraw dependency.
+Ingest turns raw material into source notes that should be useful without revisiting the original.
 
-### People pages
-Three-tier system: always create on ingest for authors, create richer profiles for subjects, use wikilinks for passing references until the second independent citation.
+Source notes are not thin summaries. A good source note reconstructs the argument, preserves distinctions, explains mechanisms, captures caveats, and links the source into the rest of the vault.
 
-### Front-matter
-Plain key-value lines (not YAML). One `#type/` per note. Types: `source`, `concept`, `query`, `person`, `session`, `meta`.
+Special ingestion routes:
 
-## What's included
+- YouTube URLs use `scripts/bloom-youtube.py` to fetch transcripts.
+- ArXiv inputs prefer HTML via `scripts/bloom-paper.py`, preserving equations, figures, tables, methods, results, and limitations.
+- General URLs use `scripts/bloom-fetch.py` with `trafilatura`.
+- PDFs and pasted text can be processed directly from `inbox/`.
 
-Sample notes so you can see the structure in action:
+After ingest, the original file moves to `residuals/`. The source note remains in `sources/`.
 
-- `sources/HTTP Protocol for Backend Engineers.md` — a full source note on HTTP statelessness, methods, headers, and security
-- `wiki/2026-05-04-what-is-http.md` — a query report answering "what is HTTP", referencing the source above
-- `residuals/http.md` — the raw transcript that was ingested to produce the source note
+## How Compile Works
 
-Remove these and wipe `wiki/_meta/index.md` once you have the hang of it, or leave them as seeds.
+Compile is deliberately conservative.
 
-## Schema
+A concept page should not be created from a single source. Bloom waits for the same idea to appear across at least two independent sources, then creates or extends a concept page with traceable claims.
 
-Every operational rule lives in `AGENTS.md`. That file is the canonical spec. Read it to understand the system, or edit it to bend the rules. `CLAUDE.md` contains the skill trigger bindings and per-session instructions.
+This keeps the wiki from becoming a graveyard of one-off summaries. Single-source themes go into Candidates in `wiki/_meta/index.md` until another source makes the pattern worth stabilizing.
 
-## Customisation
+Concept pages are scaffolds for future thinking:
 
-- **Areas**: Tweak the `#area/` taxonomy in `AGENTS.md` to reflect your own domains
-- **Keywords**: Curated in `wiki/_meta/index.md` — expand as your reading deepens
-- **Voice**: Concepts are rough scaffolding for your prose, not finished pieces. Adjust the voice guidance in `AGENTS.md` for a different register
+- short, sharp definitions
+- claim-shaped key points
+- evidence across sources
+- open questions
+- prompts for essays or further research
+- links to related concepts
+
+## How Ask Works
+
+`/bloom-ask` treats the vault as the research corpus.
+
+The agent reads `wiki/_meta/index.md` first, searches relevant source and concept pages, writes a query report under `wiki/`, and updates metadata when the answer reveals new candidates, open questions, or prompts.
+
+Answers should cite Bloom notes rather than inventing authority. If the vault does not know enough, the report should say so.
+
+## Note Format
+
+Bloom uses plain Markdown with plain key-value front matter. It is intentionally not YAML.
+
+Example source note:
+
+```markdown
+Type: #type/source
+Area: #area/craft/ai
+Keyword: #keyword/knowledge-management #keyword/llms
+Date created: [[2026-04-14]]
+Source: https://example.com/article
 
 ---
 
-Built with [Claude Code](https://claude.ai/code) and [Obsidian](https://obsidian.md).
+## Overview
+
+...
+```
+
+Every note gets exactly one `#type/` tag:
+
+- `#type/source`
+- `#type/concept`
+- `#type/query`
+- `#type/person`
+- `#type/session`
+- `#type/meta`
+
+Keywords are curated in `wiki/_meta/index.md`. Reuse near-matches before creating new ones.
+
+## Linking Rules
+
+Bloom is link-first.
+
+- Every concept claim should be traceable to source notes listed in `Sources:`.
+- New concepts should link at least two related concepts when possible.
+- People pages are connector nodes, not biographies.
+- Diagrams use inline Mermaid blocks when they clarify a system, process, architecture, or taxonomy.
+- Renames must update backlinks.
+
+## Agent Instructions
+
+`AGENTS.md` is the source of truth. If this README and `AGENTS.md` disagree, follow `AGENTS.md`.
+
+Agents should:
+
+- read `wiki/_meta/index.md` before answering vault questions
+- never write to a companion vault
+- never edit or delete files in `residuals/`
+- avoid speculative concepts from one source
+- update `wiki/_meta/index.md` and `wiki/_meta/log.md` after operations
+- keep source notes dense enough to replace the original for future use
+
+## Customization
+
+Bloom is meant to be adapted.
+
+Common changes:
+
+- edit the `#area/` taxonomy in `AGENTS.md`
+- tune the voice guidance for source notes and concept pages
+- add or merge keywords in `wiki/_meta/index.md`
+- connect a read-only companion vault
+- adjust fetch scripts for your preferred source types
+
+Keep the core separation intact: raw inputs, source notes, synthesized wiki, immutable residuals.
+
+## Requirements
+
+Bloom is just a Markdown vault plus scripts. Obsidian is optional but recommended.
+
+Useful tools:
+
+- an agent that follows repository instructions
+- Python 3
+- `uvx` for temporary Python script dependencies
+- `trafilatura` for URL extraction
+- `youtube-transcript-api` for YouTube transcript ingest
+
+The scripts are called by the agent as needed; normal vault use does not require you to run them manually.
+
+## Current State
+
+This vault already contains source notes, concept pages, people pages, and generated metadata. To understand what is inside, start with:
+
+- `wiki/_meta/index.md`
+- `wiki/_meta/graph.md`
+- `wiki/_meta/log.md`
+
+Those files show the live catalog, graph, and operation history.
+
+## Design Principle
+
+Bloom should make research easier without pretending synthesis is free.
+
+It keeps provenance visible, waits for repeated signal before forming concepts, and turns every good question back into a reusable wiki page. The goal is not to automate taste. The goal is to preserve your taste at the boundary of the system, then let the agent do the patient maintenance work around it.
