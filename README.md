@@ -23,6 +23,24 @@ The basic loop is:
 drop source -> ingest -> compile -> ask -> repeat
 ```
 
+## Supported Inputs and Outputs
+
+Bloom can ingest and organize several kinds of material:
+
+- YouTube videos, via transcript extraction.
+- ArXiv papers, via HTML-first paper cleaning that preserves equations, figures, tables, methods, results, and limitations.
+- Web articles and documentation, via content extraction with `trafilatura`.
+- PDFs, screenshots, pasted notes, transcripts, and clippings dropped into `inbox/`.
+- Existing Markdown notes inside the vault.
+
+Bloom can produce:
+
+- source notes in `sources/`
+- concept pages, people pages, query reports, and session notes in `wiki/`
+- Mermaid diagrams for architectures, flows, taxonomies, and process explanations
+- a generated vault graph in `wiki/_meta/graph.md`
+- a maintained index, keyword glossary, research-thread list, operation log, and health report
+
 ## The Core Contract
 
 Bloom separates human judgment from agent maintenance.
