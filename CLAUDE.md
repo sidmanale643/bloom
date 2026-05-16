@@ -1,6 +1,6 @@
 # Bloom - An Agent-Run Obsidian Vault
 
-This is an autonomous knowledge vault maintained by Claude. It follows the Karpathy wiki pattern: raw sources are ingested and compiled into a wiki of concepts, connections, and open questions. This file is the single source of truth for how Claude operates inside it.
+This is an autonomous knowledge vault maintained by Codex. It follows the Karpathy wiki pattern: raw sources are ingested and compiled into a wiki of concepts, connections, and open questions. This file is the single source of truth for how Codex operates inside it.
 
 ---
 
@@ -8,8 +8,8 @@ This is an autonomous knowledge vault maintained by Claude. It follows the Karpa
 
 If you keep a personal vault (a commonplace, Zettelkasten, or notes folder), you can link it alongside this one. The contract:
 
-- **Your vault** — read-only for Claude. Never write, edit, move, or delete anything there. Cross-link into it with `[[YourVault/Path/Note Title]]` style references when a Bloom note is informed by your writing.
-- **Bloom** — Claude writes, maintains, reorganises. You read, query, and occasionally correct.
+- **Your vault** — read-only for Codex. Never write, edit, move, or delete anything there. Cross-link into it with `[[YourVault/Path/Note Title]]` style references when a Bloom note is informed by your writing.
+- **Bloom** — Codex writes, maintains, reorganises. You read, query, and occasionally correct.
 
 One-way read, cross-linkable. That's the contract. If you don't have a companion vault, Bloom works fine standalone.
 
@@ -21,13 +21,13 @@ Three layers, following the Karpathy wiki pattern:
 
 | Directory | Purpose | Who writes |
 |---|---|---|
-| `inbox/` | Staging for unprocessed drops (PDFs, URLs, screenshots, pasted text) | You drop, Claude moves to residuals after ingest |
-| `sources/` | Immutable atomic source notes — one per article/paper/transcript | Claude on ingest; minor edits only after creation |
-| `wiki/` | LLM-maintained pages: concepts, queries, sessions, people, index, log, health | Claude maintains |
-| `residuals/` | Processed inbox items kept as originals; never edited by Claude | Claude moves here after ingest |
+| `inbox/` | Staging for unprocessed drops (PDFs, URLs, screenshots, pasted text) | You drop, Codex moves to residuals after ingest |
+| `sources/` | Immutable atomic source notes — one per article/paper/transcript | Codex on ingest; minor edits only after creation |
+| `wiki/` | LLM-maintained pages: concepts, queries, sessions, people, index, log, health | Codex maintains |
+| `residuals/` | Processed inbox items kept as originals; never edited by Codex | Codex moves here after ingest |
 
 Special files in `wiki/_meta/`:
-- **`index.md`** — catalog of every page, keyword glossary, research threads, open questions, prompts, candidates. Claude reads this first when answering a query. Updated on every operation.
+- **`index.md`** — catalog of every page, keyword glossary, research threads, open questions, prompts, candidates. Codex reads this first when answering a query. Updated on every operation.
 - **`log.md`** — append-only chronological record. Each entry: `## [YYYY-MM-DD] operation | Title`. Never rewritten, only appended.
 - **`health.md`** — lint dashboard. Overwritten each `/bloom-lint` run.
 
@@ -165,7 +165,7 @@ Hierarchical sub-areas under Craft. Customise the top-level areas to match your 
 - `concept` — a synthesised wiki page built from 2+ sources
 - `query` — a research report answering a question
 - `person` — an entity page for a thinker/author
-- `session` — a narrative reconstruction of a Claude conversation
+- `session` — a narrative reconstruction of a Codex conversation
 - `meta` — vault infrastructure (index, log, health)
 
 **`#keyword/`** — free-form but curated via the Keywords section of `wiki/_meta/index.md`. Before creating a new keyword:
@@ -241,6 +241,26 @@ uvx --from youtube-transcript-api python3 scripts/bloom-youtube.py "<YOUTUBE_URL
 ```
 The script writes raw transcript text (no frontmatter, no headers) to `inbox/` and prints the file path. Then process as normal.
 
+**ArXiv research papers:** When the argument is an arXiv URL (`arxiv.org/abs/...`, `arxiv.org/pdf/...`, `arxiv.org/html/...`) or a bare arXiv ID, prefer the HTML paper over PDF extraction. Normalize the input to the arXiv ID, then fetch:
+```
+https://arxiv.org/html/<ARXIV_ID>
+```
+If the official HTML page is unavailable or empty, try:
+```
+https://ar5iv.labs.arxiv.org/html/<ARXIV_ID>
+```
+
+Use the paper cleaner to fetch the HTML route and write a clean reading packet to `inbox/`:
+```
+uvx --with trafilatura python3 scripts/bloom-paper.py "<ARXIV_URL_OR_ID>"
+```
+
+The packet must preserve: title, authors, date/version, arXiv ID, canonical abs/html/pdf links, abstract, main claims, contributions, section-by-section argument, important equations in LaTeX with explanations, compact tables as markdown tables, figure numbers/captions/image links where exposed by HTML, algorithms/pseudocode, experimental setup, datasets, metrics, ablations, limitations, and conclusions.
+
+The packet must strip: references/bibliography, citation metadata dumps, page headers/footers, navigation, license blocks, related links, repeated author/institution boilerplate, and appendix material unless it contains core equations, implementation details, proofs, or important extra results. Keep inline citations only when they matter to the argument; never include the full reference list in the inbox packet.
+
+Then process the inbox packet as normal. Do not use PDF extraction for arXiv papers by default. If both HTML routes fail, stop and ask the user for pasted text or explicit approval to attempt a PDF fallback; do not ingest noisy PDF text as a source note.
+
 **Non-YouTube URLs:** Use the fetch script with the `--inbox` flag, which extracts content via trafilatura and writes it directly to `inbox/<Title>.md`:
 ```
 uvx --with trafilatura python3 scripts/bloom-fetch.py --inbox "<URL>"
@@ -307,7 +327,7 @@ Won't do: modify any notes, create new notes, generate excalidraw files, or visu
 
 ### Save (`/save`)
 
-Capture the current Claude conversation as a narrative wiki page. Only invoked explicitly — no auto-save.
+Capture the current Codex conversation as a narrative wiki page. Only invoked explicitly — no auto-save.
 
 **Trigger:** `/save <Title Case — Descriptive Name>` (e.g. `/save Debugging Redis Connection Pool Leaks`)
 
@@ -337,7 +357,7 @@ Won't do: write into companion vault, save unless invoked, create sessions from 
 
 ## First Principles Explanation Mode
 
-When the user explicitly asks for a first-principles explanation (e.g. "explain X from first principles", "from the ground up", "from fundamentals", "break X down from first principles"), Claude switches into this mode. Do not activate on implicit requests.
+When the user explicitly asks for a first-principles explanation (e.g. "explain X from first principles", "from the ground up", "from fundamentals", "break X down from first principles"), Codex switches into this mode. Do not activate on implicit requests.
 
 ### Behavioral rules
 

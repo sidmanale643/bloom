@@ -26,9 +26,41 @@ If `$ARGUMENTS` is a YouTube URL (contains `youtube.com/watch` or `youtu.be/`):
 
 3. **Process as normal** — continue from step "Normalise into a source note"
 
+### ArXiv paper handling
+
+If `$ARGUMENTS` is an arXiv URL (`arxiv.org/abs/...`, `arxiv.org/pdf/...`, `arxiv.org/html/...`) or a bare arXiv ID:
+
+1. **Fetch and write a cleaned paper packet to inbox** — run:
+   ```bash
+   uvx --with trafilatura python3 scripts/bloom-paper.py "$ARGUMENTS"
+   ```
+   This script normalizes arXiv IDs/URLs, prefers `https://arxiv.org/html/<ARXIV_ID>`, falls back to `https://ar5iv.labs.arxiv.org/html/<ARXIV_ID>`, extracts with trafilatura, strips references/bibliography/citation-link noise/appendix prompt-template tails, and writes `inbox/<Paper Title>.md`. It prints the output file path to stdout.
+
+2. **Verify the packet before ingesting** — skim the generated inbox file and confirm it preserves:
+   - Title, authors, date/version, arXiv ID, canonical abs/html/pdf links
+   - Abstract, main claims, and contributions
+   - Section-by-section argument
+   - Important equations where extractable
+   - Compact tables as markdown tables
+   - Figure numbers, captions, and image links when exposed by the HTML
+   - Algorithms, pseudocode, experimental setup, datasets, metrics, ablations, limitations, and conclusions
+
+   Confirm it strips:
+   - References / bibliography
+   - Citation metadata dumps
+   - Page headers, footers, navigation, license blocks, related links
+   - Repeated author/institution boilerplate
+   - Appendix/prompt-template material unless it contains core equations, implementation details, proofs, or important extra results
+
+   Keep inline citations only when they matter to the argument. Never include the full reference list in the final source note.
+
+3. **Process as normal** — continue from step "Normalise into a source note".
+
+Do not use PDF extraction for arXiv papers by default. If the paper cleaner fails on both HTML routes or produces an obviously partial packet, stop and ask the user for pasted text or explicit approval to attempt a PDF fallback; do not ingest noisy PDF text as a source note.
+
 ### URL Extraction (non-YouTube)
 
-If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouTube URL:
+If `$ARGUMENTS` is a URL (starts with `http://` or `https://`) and is NOT a YouTube URL or arXiv paper:
 
 1. **Extract and write to inbox** — run:
    ```bash

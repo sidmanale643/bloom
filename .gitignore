@@ -8,3 +8,6 @@
 .obsidian/cache
 .trash/
 .obsidian/
+
+# Bloom local machine state
+.bloom/

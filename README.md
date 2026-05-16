@@ -60,6 +60,7 @@ A single source is never enough for a concept. Themes are parked as **candidates
 
 ### Smart ingest
 - **YouTube URLs** — transcripts fetched automatically via `youtube-transcript-api`
+- **ArXiv papers** — HTML pages are fetched into filtered reading packets that preserve equations, figures, tables, methods, and results while stripping bibliography noise
 - **Non-YouTube URLs** — content extracted via trafilatura (`scripts/bloom-fetch.py`)
 - Falls back to `webfetch` if extraction fails
 
